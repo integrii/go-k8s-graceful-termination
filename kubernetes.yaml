@@ -12,7 +12,7 @@ spec:
       labels:
         app: graceful-shutdown-app
     spec:
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       containers:
       - name: graceful-shutdown-app
         image: integrii/go-k8s-graceful-termination:latest
@@ -21,6 +21,8 @@ spec:
             path: /alive
             port: 8080
         readinessProbe:
+          periodSeconds: 2
+          failureThreshold: 3
           httpGet:
             path: /ready
             port: 8080

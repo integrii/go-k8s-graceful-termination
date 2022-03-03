@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 )
 
 // ShuttingDown globally calls out if our app is shutting down or not
@@ -23,6 +24,7 @@ func main() {
 	http.HandleFunc("/ready", readinessHandler)
 
 	// start our web service
+	log.Println("starting web service on :8080")
 	err := http.ListenAndServe(":8080", http.DefaultServeMux)
 	if err != nil {
 		log.Fatalln("error when running web server:", err)
@@ -34,10 +36,17 @@ func trapShutdownSignal() {
 	signal.Notify(sigChan, os.Interrupt)
 	<-sigChan
 	ShuttingDown = true
+
+	// wait for the liveness checks to fail and kubernetes to reconfigure
+	log.Println("graceful shutdown has begun")
+	time.Sleep(time.Second * 20) // periodSeconds * failureThreshold + 10s
+	log.Println("exiting clean due to shutdown signal")
+	os.Exit(0)
 }
 
 // indexHandler handles requests that don't match any other handler path
 func indexHandler(res http.ResponseWriter, req *http.Request) {
+	log.Println("handing normal web request from", req.Host)
 	hostname, err := os.Hostname()
 	if err != nil {
 		res.WriteHeader(http.StatusInternalServerError)
@@ -52,6 +61,7 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 // will result in this pod being removed from the service endpoint list
 // where new traffic is sent.
 func readinessHandler(res http.ResponseWriter, req *http.Request) {
+	log.Println("handing readiness request from", req.Host)
 	if ShuttingDown {
 		res.WriteHeader(http.StatusInternalServerError)
 		return
@@ -63,5 +73,6 @@ func readinessHandler(res http.ResponseWriter, req *http.Request) {
 // This is mainly used by the liveness probes.  Failures on this endpoint
 // will result in the app being restarted by Kubernetes.
 func livenessHandler(res http.ResponseWriter, req *http.Request) {
+	log.Println("handing liveness request from", req.Host)
 	res.WriteHeader(http.StatusOK)
 }
