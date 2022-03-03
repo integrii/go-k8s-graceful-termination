@@ -23,7 +23,7 @@ This is how graceful removal of pods from load balancers should look:
 - The containerized process waits for the time it takes for readiness probes to fail, plus the time it takes for your Kubernetes cluster to reconfigure (should be less than 10 seconds)
 	- This formula is: `readinessProbe.periodSeconds * readinessProbe.failureThreshold + 10s`
 	- This must be less than the `terminationGracePeriodSeconds`
-- Notice that `kubectl get pods` shows the `READY` colum as `0/1` indicating readiness probes are down
+- `kubectl get pods` shows the `READY` colum as `0/1` indicating readiness probes are down
 - The pod exits gracefully
 
 
