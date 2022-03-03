@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 )
 
@@ -30,12 +29,17 @@ func main() {
 	if err != nil {
 		log.Fatalln("error when running web server:", err)
 	}
+	os.Exit(0)
 }
 
 func trapShutdownSignal() {
+	log.Println("watching for termination signals")
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGTERM)
-	<-sigChan
+	signal.Notify(sigChan)
+
+	// when we get a signal, flip the global ShuttingDown flag
+	sig := <-sigChan
+	log.Println("got signal:", sig)
 	ShuttingDown = true
 
 	// wait for the liveness checks to fail and kubernetes to reconfigure
@@ -62,11 +66,12 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 // will result in this pod being removed from the service endpoint list
 // where new traffic is sent.
 func readinessHandler(res http.ResponseWriter, req *http.Request) {
-	log.Println("handing readiness request from", req.Host)
 	if ShuttingDown {
+		log.Println("failing readiness request from", req.Host)
 		res.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	log.Println("handing readiness request from", req.Host)
 	res.WriteHeader(http.StatusOK)
 }
 
