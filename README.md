@@ -64,6 +64,20 @@ spec:
           limits:
             cpu: 1
             memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graceful-shutdown-app
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: graceful-shutdown-app
+  type: NodePort
 ```
 
 
