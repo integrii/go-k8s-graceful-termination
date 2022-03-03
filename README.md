@@ -74,7 +74,7 @@ You can test this graceful shutdown yourself.  Clone this repo and try the follo
 
 ```
 kubectl create ns graceful-termination
-kubectl -n graceful-termination apply -f kubernetes.yaml
+kubectl -n graceful-termination apply -f https://raw.githubusercontent.com/integrii/go-k8s-graceful-termination/main/kubernetes.yaml
 <wait for service to come online>
 kubectl -n graceful-termination port-forward service/graceful-shutdown-app 8080 (in another terminal)
 kubectl -n graceful-termination logs -f -l app=graceful-shutdown-app (in another terminal)
