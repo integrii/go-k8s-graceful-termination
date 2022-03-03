@@ -111,6 +111,6 @@ You should see _no_ dropped connections during the rolling update, even though t
 
 ## Some Closing Notes
 
-It is to common that I have seen applications not take care when being removed from the flow of traffic, resulting in connection failures.  Hopefully this clears things up.  This process has always existed, even with traditional load balncers, and in those situations it still is regular procedure to remove backends from the load balancer before bringing down those applications.
+It is too common that I have seen applications not take care when being removed from the flow of traffic, resulting in connection failures.  Hopefully this clears things up.  This process has always existed, even with traditional load balncers, and in those situations it still is regular procedure to remove backends from the load balancer before bringing down those applications.
 
 You also could alternatively do a graceful shutdown integration using [preStop](https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/) hooks, which can be configured to send a web request to your application before it is sent a termination signal - but that approach wasn't covered here.
