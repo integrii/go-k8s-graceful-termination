@@ -1,6 +1,6 @@
 # Overview
 
-This is an example appliation and self-paced tutorial for implementing readiness checks properly in Kubernets and Go.  This Go application **does not drop connections when terminating** due to proper shutdown signal trapping and readiness checks.  **If you do not use readiness checks properly today, your service probably drops connections** for users when your pods are re-deployed or removed.
+This is an example appliation and self-paced tutorial for implementing readiness checks properly in Kubernetes and Go.  This Go application **does not drop connections when terminating** due to proper shutdown signal trapping and readiness checks.  **If you do not use readiness checks properly today, your service probably drops connections** for users when your pods are re-deployed or removed.
 
 ![image](https://user-images.githubusercontent.com/98695/156651930-1843f799-e577-4c22-895c-5e5a611af895.png)
 
