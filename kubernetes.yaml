@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graceful-shutdown-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: graceful-shutdown-app
+  template:
+    metadata:
+      labels:
+        app: graceful-shutdown-app
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: graceful-shutdown-app
+        image: integrii/go-k8s-graceful-termination:latest
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8080
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 500m
+          limits:
+            cpu: 1
+            memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graceful-shutdown-app
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: graceful-shutdown-app
+  type: NodePort
