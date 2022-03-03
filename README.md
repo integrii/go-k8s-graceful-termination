@@ -2,6 +2,8 @@
 
 This is an example appliation and self-paced tutorial for implementing readiness checks properly in Kubernets and Go.  This Go application **does not drop connections when terminating** due to proper shutdown signal trapping and readiness checks.  **If you do not use readiness checks properly today, your service probably drops connections** for users when your pods are re-deployed or removed.
 
+![image](https://user-images.githubusercontent.com/98695/156651930-1843f799-e577-4c22-895c-5e5a611af895.png)
+
 This follows the [best practices for Kubernetes](https://learnk8s.io/production-best-practices) web services by implementing a [readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes) that removes the pod from the Kubernetes [endpoints](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#endpoints-v1-core) list once the check shows as 'failed'.  When an endpoint is removed, the Kubernetes cluster will reconfigure to remove it from all load balancing.  Only after that process completes can your pod be removed gracefully.
 
 Check out the `go` code [here](https://github.com/integrii/go-k8s-graceful-termination/blob/main/cmd/app/main.go)
