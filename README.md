@@ -103,6 +103,7 @@ done (in another terminal)
 kubectl -n graceful-termination set env deployment/graceful-shutdown-app TEST=`date +%s` (this will cause a rolling update to the deployment)
 watch kubectl -n graceful-termination get pods
 <observe terminal doing curl tests>
+kubectl delete namespace graceful-termination (when you're done with everything)
 ```
 
 You should see _no_ dropped connections during the rolling update, even though there is only one pod!
