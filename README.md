@@ -4,6 +4,8 @@ This is an example appliation and self-paced tutorial for implementing readiness
 
 This follows the [best practices for Kubernetes](https://learnk8s.io/production-best-practices) web services by implementing a [readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-readiness-probes) that removes the pod from the Kubernetes [endpoints](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#endpoints-v1-core) list once the check shows as 'failed'.  When an endpoint is removed, the Kubernetes cluster will reconfigure to remove it from all load balancing.  Only after that process completes can your pod be removed gracefully.
 
+Check out the `go` code [here](https://github.com/integrii/go-k8s-graceful-termination/blob/main/cmd/app/main.go)
+
 This should be combined with a pod disruption budget to restrict how many pods can be unavailable at one time as well as a pod anti-affinity policy to stripe your pods across nodes for best production resiliency.
 
 ## Order of operations
