@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func main() {
 func trapShutdownSignal() {
 	log.Println("watching for termination signals")
 	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan)
+	signal.Notify(sigChan, syscall.SIGTERM)
 
 	// when we get a signal, flip the global ShuttingDown flag
 	sig := <-sigChan
