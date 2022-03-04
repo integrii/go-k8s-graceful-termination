@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// ShuttingDown globally calls out if our app is shutting down or not
-var ShuttingDown bool
-
 func main() {
 
 	// watch for shutdown signals
@@ -21,8 +18,6 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	// setup a liveness handler
 	http.HandleFunc("/alive", livenessHandler)
-	// setup a readiness handler
-	http.HandleFunc("/ready", readinessHandler)
 
 	// start our web service
 	log.Println("starting web service on :8080")
@@ -41,11 +36,11 @@ func trapShutdownSignal() {
 	// when we get a signal, flip the global ShuttingDown flag
 	sig := <-sigChan
 	log.Println("got signal:", sig)
-	ShuttingDown = true
 
 	// wait for the liveness checks to fail and kubernetes to reconfigure
 	log.Println("graceful shutdown has begun")
-	time.Sleep(time.Second * 20) // periodSeconds * failureThreshold + 10s
+	time.Sleep(time.Second * 20)
+	// sleep while the cluster removes this instance from incoming service traffic
 	log.Println("exiting clean due to shutdown signal")
 	os.Exit(0)
 }
@@ -60,20 +55,6 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	res.Write([]byte("Hello! I am here! - " + hostname))
-}
-
-// readinessHandler handles requests that check the applications' readiness.
-// This is mainly used by the readiness probes.  Failures on this endpoint
-// will result in this pod being removed from the service endpoint list
-// where new traffic is sent.
-func readinessHandler(res http.ResponseWriter, req *http.Request) {
-	if ShuttingDown {
-		log.Println("failing readiness request from", req.Host)
-		res.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	log.Println("handing readiness request from", req.Host)
-	res.WriteHeader(http.StatusOK)
 }
 
 // livenessHandler handles requests that check the applications' liveness.
