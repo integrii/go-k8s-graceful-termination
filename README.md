@@ -2,7 +2,7 @@
 
 This is an example Go appliation and self-paced tutorial for implementing the graceful shutdown of Kubernetes pods.  This Go application **does not drop connections when terminating** due to proper shutdown signal trapping.  **If your app does not capture shutdown signals properly today, your service probably drops connections** for users when your pods are re-deployed or removed for any reason.
 
-![image](https://user-images.githubusercontent.com/98695/156859047-91f7d339-7217-4553-8202-75f670e5abda.png)
+![image](https://user-images.githubusercontent.com/98695/156859137-1c2a5b0b-6a97-4400-8eee-65c4cb8a97c4.png)
 
 This follows the [best practices for Kubernetes](https://learnk8s.io/production-best-practices) web services by implementing shutdown signal capturing that keeps the pod alive while connections are still ariving to it. Once a pod goes into the `Terminating` state, the pod is removed from the Kubernetes [endpoints](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#endpoints-v1-core) list.  When an endpoint is removed, the Kubernetes cluster will reconfigure to remove it from all load balancing.  Only after that process completes can your pod be removed gracefully.  You can find [detailed documentation from Kubernetes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-termination) about this.
 
