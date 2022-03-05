@@ -18,6 +18,8 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	// setup a liveness handler
 	http.HandleFunc("/alive", livenessHandler)
+	// setup a readiness handler
+	http.HandleFunc("/ready", readinessHandler)
 
 	// start our web service
 	log.Println("starting web service on :8080")
@@ -62,5 +64,12 @@ func indexHandler(res http.ResponseWriter, req *http.Request) {
 // will result in the app being restarted by Kubernetes.
 func livenessHandler(res http.ResponseWriter, req *http.Request) {
 	log.Println("handing liveness request from", req.Host)
+	res.WriteHeader(http.StatusOK)
+}
+
+// readinessHandler handles readiness requeststhat check the applications'
+// ability to take new traffic.
+func readinessHandler(res http.ResponseWriter, req *http.Request) {
+	log.Println("handing readiness request from", req.Host)
 	res.WriteHeader(http.StatusOK)
 }
