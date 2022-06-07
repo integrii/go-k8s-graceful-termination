@@ -15,13 +15,13 @@ This should be combined with a pod disruption budget to restrict how many pods c
 This is how graceful removal of pods from load balancers should look:
 
 - The Kubernetes API is sent a delete command for a pod and changes the pod to the `Terminating` state
+- [Endpoints](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#endpoints-v1-core) for the pod are removed from the Kubernetes API
 - The [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/) responsible for this pod instructs the [CRI](https://kubernetes.io/docs/concepts/architecture/cri/) to stop the containers in this pod
 - The CRI sends a shutdown signal to the containerized processes
 - The containerized process catches this signal gracefully
-  - The containerized application **continues serving requests that find their way to it**
-  - This should be less than 10 seconds
-	- This must be less than the `terminationGracePeriodSeconds` of your pod
-- The Kubernetes cluster reconfigures to remove the pod from the flow of service traffic 
+  - The containerized application **continues serving requests that find their way to it** for 10 seconds
+	- The duration of time of this delay must be less than the `terminationGracePeriodSeconds` of its pod spec
+- Meanwhile, the Kubernetes cluster finishes reconfiguration that removes the pod from the flow of service traffic 
 - The pod exits gracefully
 
 
